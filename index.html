@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Newtfruit</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#8A2BE2">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Newtfruit">
+<meta name="mobile-web-app-capable" content="yes">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+<style>
+:root{
+  --purple:#8A2BE2; --pink:#FF2D75; --cyan:#00E5FF; --teal:#00FFA3; --gold:#FFD700;
+  --glass-bg:rgba(255,255,255,.08); --glass-bg-strong:rgba(255,255,255,.14);
+  --glass-border:rgba(255,255,255,.22); --glass-blur:18px;
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s7:48px;
+}
+*{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#08060f;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#fff}
+
+/* ambient liquid-glass background blobs */
+body::before, body::after{
+  content:'';position:fixed;border-radius:50%;filter:blur(70px);z-index:0;pointer-events:none;opacity:.55;
+}
+body::before{
+  width:70vw;height:70vw;top:-20vw;left:-15vw;
+  background:radial-gradient(circle at 30% 30%, var(--purple), transparent 60%),
+             radial-gradient(circle at 70% 70%, var(--pink), transparent 60%);
+}
+body::after{
+  width:60vw;height:60vw;bottom:-18vw;right:-15vw;
+  background:radial-gradient(circle at 30% 30%, var(--cyan), transparent 60%),
+             radial-gradient(circle at 70% 70%, var(--teal), transparent 60%);
+}
+
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:1}
+.screen.active{display:flex}
+
+.glass{
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(160%);
+  backdrop-filter:blur(var(--glass-blur)) saturate(160%);
+  border:1px solid var(--glass-border);
+}
+
+#logoImg{width:96px;height:96px;border-radius:22px;margin-bottom:var(--s4);box-shadow:0 8px 32px rgba(138,43,226,.5);border:1px solid rgba(255,255,255,.3)}
+
+#startBtn{
+  padding:18px 54px;font-size:18px;font-weight:700;border:none;border-radius:999px;color:#fff;
+  background:linear-gradient(135deg, var(--purple), var(--cyan));
+  box-shadow:0 6px 24px rgba(138,43,226,.5);
+}
+h1{
+  font-size:32px;font-weight:800;margin-bottom:var(--s6);letter-spacing:.3px;
+  background:linear-gradient(135deg, var(--pink), var(--purple) 50%, var(--cyan) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.roleBtn{
+  width:80%;max-width:320px;padding:16px 20px;margin:var(--s2) 0;font-size:15px;font-weight:600;
+  border-radius:16px;color:#fff;text-align:left;
+  background:var(--glass-bg); -webkit-backdrop-filter:blur(var(--glass-blur)); backdrop-filter:blur(var(--glass-blur));
+  border:1px solid var(--glass-border);
+}
+.roleBtn:active{background:var(--glass-bg-strong)}
+
+#codeChip{
+  position:absolute;top:16px;left:16px;padding:8px 16px;border-radius:999px;font-size:15px;
+  letter-spacing:2px;font-weight:700;z-index:5;color:var(--gold);
+  background:var(--glass-bg); -webkit-backdrop-filter:blur(var(--glass-blur)); backdrop-filter:blur(var(--glass-blur));
+  border:1px solid var(--glass-border);
+}
+.statusChip{
+  position:absolute;top:16px;right:16px;display:flex;align-items:center;gap:7px;padding:8px 16px;
+  border-radius:999px;font-size:12px;z-index:5;
+  background:var(--glass-bg); -webkit-backdrop-filter:blur(var(--glass-blur)); backdrop-filter:blur(var(--glass-blur));
+  border:1px solid var(--glass-border);
+}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gold);transition:background .2s;box-shadow:0 0 8px currentColor}
+.dot.live{background:var(--teal)}
+.dot.fail{background:#ff4d6d}
+
+video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#111}
+video.mirrored{transform:scaleX(-1)}
+
+#cue{
+  position:absolute;bottom:28%;left:5%;right:5%;text-align:center;font-size:26px;font-weight:800;color:#fff;
+  text-shadow:0 3px 12px rgba(0,0,0,.8);display:none;padding:16px;border-radius:18px;z-index:4;
+  background:linear-gradient(135deg, rgba(255,45,117,.5), rgba(138,43,226,.5));
+  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.25);
+}
+.exitBtn{
+  position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#fff;padding:11px 26px;
+  border-radius:999px;font-size:14px;z-index:5;border:1px solid var(--glass-border);
+  background:var(--glass-bg); -webkit-backdrop-filter:blur(var(--glass-blur)); backdrop-filter:blur(var(--glass-blur));
+}
+.back{
+  position:absolute;top:16px;left:16px;color:#fff;font-size:19px;width:40px;height:40px;border-radius:50%;z-index:6;
+  border:1px solid var(--glass-border); display:flex;align-items:center;justify-content:center;
+  background:var(--glass-bg); -webkit-backdrop-filter:blur(var(--glass-blur)); backdrop-filter:blur(var(--glass-blur));
+}
+
+#joinCode{
+  font-size:30px;letter-spacing:8px;text-align:center;text-transform:uppercase;width:70%;padding:16px;
+  border-radius:16px;border:1px solid var(--glass-border);margin-bottom:var(--s5);font-weight:700;color:#fff;
+  background:var(--glass-bg); -webkit-backdrop-filter:blur(var(--glass-blur)); backdrop-filter:blur(var(--glass-blur));
+}
+#joinCode::placeholder{color:rgba(255,255,255,.35)}
+#joinBtn{
+  padding:14px 44px;border-radius:999px;border:none;color:#fff;font-weight:700;font-size:16px;
+  background:linear-gradient(135deg, var(--pink), var(--purple));
+  box-shadow:0 6px 20px rgba(255,45,117,.4);
+}
+#joinBtn:disabled{opacity:.3;box-shadow:none}
+#joinError{color:#ff6b81;font-size:13px;margin-top:var(--s4);min-height:16px}
+
+#dock{
+  position:absolute;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(4,1fr);gap:7px;
+  padding:12px;z-index:5;border-top:1px solid var(--glass-border);
+  background:rgba(8,6,15,.45); -webkit-backdrop-filter:blur(var(--glass-blur)); backdrop-filter:blur(var(--glass-blur));
+}
+.dirBtn{
+  padding:14px 4px;font-size:11px;border-radius:12px;color:#fff;font-weight:600;border:1px solid var(--glass-border);
+  background:var(--glass-bg);
+}
+.dirBtn.flash{background:linear-gradient(135deg, var(--pink), var(--purple));border-color:transparent}
+.dirBtn:disabled{opacity:.3}
+
+#drop{
+  position:relative;z-index:2;border:2px dashed rgba(255,255,255,.35);border-radius:20px;width:80%;
+  padding:36px 20px;text-align:center;font-size:14px;color:rgba(255,255,255,.75);margin-top:var(--s3);cursor:pointer;
+  background:var(--glass-bg); -webkit-backdrop-filter:blur(var(--glass-blur)); backdrop-filter:blur(var(--glass-blur));
+}
+#drop.over{border-color:var(--pink);color:var(--pink);background:rgba(255,45,117,.08)}
+#soloFile{display:none}
+#soloOverlay{position:absolute;top:50%;left:50%;max-width:70vw;max-height:70vw;transform-origin:center;touch-action:none;display:none;z-index:3;border-radius:12px}
+#opRow{
+  position:absolute;bottom:114px;left:0;right:0;padding:0 22px;display:none;align-items:center;gap:10px;
+  z-index:5;color:#fff;font-size:13px;
+}
+#opRow input{flex:1;accent-color:var(--teal)}
+#soloShot{
+  position:absolute;bottom:26px;left:50%;transform:translateX(-50%);width:68px;height:68px;border-radius:50%;
+  border:4px solid #fff;background:radial-gradient(circle, rgba(255,255,255,.15), transparent 70%);z-index:5;
+  box-shadow:0 0 0 4px rgba(255,255,255,.08);
+}
+#soloTopBar{position:absolute;top:16px;left:0;right:0;display:flex;justify-content:space-between;padding:0 16px;z-index:6}
+#changeImgBtn{
+  color:#fff;border:1px solid var(--glass-border);padding:9px 16px;border-radius:999px;font-size:12px;display:none;
+  background:var(--glass-bg); -webkit-backdrop-filter:blur(var(--glass-blur)); backdrop-filter:blur(var(--glass-blur));
+}
+#toast{
+  position:absolute;top:72px;left:50%;transform:translateX(-50%);padding:11px 20px;border-radius:999px;
+  font-size:13px;display:none;z-index:20;max-width:85%;text-align:center;color:#fff;
+  background:rgba(20,16,30,.75); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+  border:1px solid var(--glass-border);
+}
+</style></head>
+<body>
+
+<div id="start" class="screen active">
+  <img id="logoImg" src="icon-192.png" alt="Newtfruit logo">
+  <h1>Newtfruit</h1>
+  <button id="startBtn">Start</button>
+</div>
+
+<div id="landing" class="screen">
+  <button class="back" onclick="showScreen('start')">←</button>
+  <h1>Newtfruit</h1>
+  <button class="roleBtn" id="btnPhotog">📷 I'm taking the photo</button>
+  <button class="roleBtn" id="btnJoin">🙋 I'm posing</button>
+  <button class="roleBtn" id="btnSolo">🖼️ Solo — Reference overlay</button>
+</div>
+
+<div id="photog" class="screen">
+  <video id="localVideo" autoplay playsinline muted></video>
+  <div id="codeChip">·····</div>
+  <div class="statusChip"><span class="dot" id="pDot"></span><span id="pStatus">Waiting</span></div>
+  <div id="cue"></div>
+  <button class="exitBtn" id="endBtn1">End Session</button>
+</div>
+
+<div id="join" class="screen">
+  <button class="back" onclick="resetToLanding()">←</button>
+  <h1>Enter Code</h1>
+  <input id="joinCode" maxlength="5" placeholder="K7QM2" autocomplete="off" autocapitalize="characters">
+  <button id="joinBtn" disabled>Join</button>
+  <div id="joinError"></div>
+</div>
+
+<div id="poser" class="screen">
+  <video id="remoteVideo" autoplay playsinline></video>
+  <button class="back" id="posBack">←</button>
+  <div class="statusChip"><span class="dot" id="oDot"></span><span id="oStatus">Connecting</span></div>
+  <div id="dock">
+    <button class="dirBtn" data-c="Tilt left">Tilt left</button>
+    <button class="dirBtn" data-c="Tilt right">Tilt right</button>
+    <button class="dirBtn" data-c="Chin up">Chin up</button>
+    <button class="dirBtn" data-c="Chin down">Chin down</button>
+    <button class="dirBtn" data-c="Step left">Step left</button>
+    <button class="dirBtn" data-c="Step right">Step right</button>
+    <button class="dirBtn" data-c="Come closer">Closer</button>
+    <button class="dirBtn" data-c="Step back">Back</button>
+    <button class="dirBtn" data-c="Smile">Smile</button>
+    <button class="dirBtn" data-c="Hold still">Hold still</button>
+    <button class="dirBtn" data-c="Relax hands">Relax hands</button>
+    <button class="dirBtn" data-c="Perfect!">Perfect!</button>
+  </div>
+</div>
+
+<div id="solo" class="screen">
+  <video id="soloVideo" autoplay playsinline muted></video>
+  <img id="soloOverlay" alt="reference overlay">
+  <div id="soloTopBar">
+    <button class="back" id="soloBack">←</button>
+    <div style="display:flex;gap:8px">
+      <button id="soloSwitchBtn" class="glass" style="color:#fff;width:40px;height:40px;border-radius:50%;font-size:16px;display:flex;align-items:center;justify-content:center">🔄</button>
+      <button id="changeImgBtn">Change photo</button>
+    </div>
+  </div>
+  <div id="drop">Drag &amp; drop a reference photo here,<br>or tap to choose</div>
+  <input type="file" id="soloFile" accept="image/*">
+  <div id="opRow"><span>◐</span><input type="range" id="opSlider" min="0" max="100" value="50"><span id="opVal">50%</span></div>
+  <button id="soloShot"></button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+}
+function toast(msg, ms){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(function(){ t.style.display = 'none'; }, ms || 2500);
+}
+function isSecureContextOk(){
+  return location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+}
+function cameraErrorMessage(err){
+  if (!isSecureContextOk()) return 'Camera needs HTTPS or localhost to work — this page isn\'t served securely.';
+  if (!err) return 'Could not access the camera.';
+  if (err.name === 'NotAllowedError') return 'Camera permission was denied.';
+  if (err.name === 'NotFoundError') return 'No camera was found on this device.';
+  return err.message || 'Could not access the camera.';
+}
+
+document.getElementById('startBtn').onclick = function(){ showScreen('landing'); };
+document.getElementById('btnPhotog').onclick = goPhotographer;
+document.getElementById('btnJoin').onclick = function(){ resetJoinScreen(); showScreen('join'); };
+document.getElementById('btnSolo').onclick = function(){ showScreen('solo'); };
+document.getElementById('posBack').onclick = function(){ endEverything(); };
+document.getElementById('soloBack').onclick = function(){ endEverything(); };
+
+function resetToLanding(){
+  endEverything();
+  showScreen('landing');
+}
+
+function genCode(){
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no O/0/I/1
+  var s = '';
+  for (var i = 0; i < 5; i++) s += chars[Math.floor(Math.random() * chars.length)];
+  return s;
+}
+
+// ---------------- Shared state ----------------
+var peer = null, conn = null, call = null, code = null, localStream = null;
+
+function setDot(dotId, statusId, state){
+  var d = document.getElementById(dotId), s = document.getElementById(statusId);
+  d.classList.remove('live', 'fail');
+  if (state === 'live'){ d.classList.add('live'); s.textContent = 'Live'; }
+  else if (state === 'fail'){ d.classList.add('fail'); s.textContent = 'Connection failed'; }
+  else { s.textContent = 'Waiting'; }
+}
+
+// ---------------- Feature 1: Photographer ----------------
+async function goPhotographer(){
+  if (!isSecureContextOk()){
+    toast(cameraErrorMessage(null), 4000);
+    return;
+  }
+  code = genCode();
+  showScreen('photog');
+  document.getElementById('codeChip').textContent = code;
+  setDot('pDot', 'pStatus', 'waiting');
+  document.getElementById('cue').style.display = 'none';
+
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+  } catch (err) {
+    toast(cameraErrorMessage(err), 4000);
+    showScreen('landing');
+    return;
+  }
+  document.getElementById('localVideo').srcObject = localStream;
+
+  try {
+    peer = new Peer('newtfruit-' + code);
+  } catch (e) {
+    toast('Could not start session. Check your internet connection.', 4000);
+    return;
+  }
+
+  peer.on('error', function(err){
+    console.error('Peer error', err);
+    if (document.getElementById('photog').classList.contains('active')) {
+      toast('Connection error: ' + (err && err.type ? err.type : 'unknown'), 3000);
+    }
+  });
+
+  peer.on('call', function(c){
+    call = c;
+    c.answer(localStream);
+    c.on('error', function(e){ console.error('Call error', e); });
+  });
+
+  peer.on('connection', function(c){
+    conn = c;
+    conn.on('open', function(){ setDot('pDot', 'pStatus', 'live'); });
+    conn.on('data', function(d){ showCue(String(d)); });
+    conn.on('close', function(){ setDot('pDot', 'pStatus', 'waiting'); });
+  });
+}
+
+var cueTimer = null;
+function showCue(text){
+  var el = document.getElementById('cue');
+  el.textContent = text;
+  el.style.display = 'block';
+  clearTimeout(cueTimer);
+  cueTimer = setTimeout(function(){ el.style.display = 'none'; }, 2200);
+}
+
+document.getElementById('endBtn1').onclick = function(){ endEverything(); showScreen('landing'); };
+
+// ---------------- Feature 1: Poser ----------------
+function resetJoinScreen(){
+  document.getElementById('joinCode').value = '';
+  document.getElementById('joinBtn').disabled = true;
+  document.getElementById('joinError').textContent = '';
+}
+
+document.getElementById('joinCode').addEventListener('input', function(e){
+  var v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5);
+  e.target.value = v;
+  document.getElementById('joinBtn').disabled = v.length !== 5;
+  document.getElementById('joinError').textContent = '';
+});
+
+document.getElementById('joinBtn').onclick = function(){
+  var c = document.getElementById('joinCode').value;
+  if (c.length !== 5) return;
+  document.getElementById('joinBtn').disabled = true;
+  document.getElementById('joinError').textContent = '';
+
+  try {
+    peer = new Peer();
+  } catch (e) {
+    document.getElementById('joinError').textContent = 'Could not start connection.';
+    document.getElementById('joinBtn').disabled = false;
+    return;
+  }
+
+  var settled = false;
+  var failTimer = setTimeout(function(){
+    if (!settled) {
+      settled = true;
+      document.getElementById('joinError').textContent = 'Connection failed. Check the code and try again.';
+      document.getElementById('joinBtn').disabled = false;
+      if (peer) { peer.destroy(); peer = null; }
+    }
+  }, 15000);
+
+  peer.on('open', function(){
+    conn = peer.connect('newtfruit-' + c, { reliable: true });
+
+    conn.on('open', function(){
+      settled = true;
+      clearTimeout(failTimer);
+      setDot('oDot', 'oStatus', 'live');
+    });
+
+    conn.on('error', function(){
+      if (!settled) {
+        settled = true;
+        clearTimeout(failTimer);
+        document.getElementById('joinError').textContent = 'Connection failed. Check the code and try again.';
+        document.getElementById('joinBtn').disabled = false;
+      }
+    });
+
+    // Call with an empty stream — poser's own camera is never requested or used.
+    call = peer.call('newtfruit-' + c, new MediaStream());
+    call.on('stream', function(remoteStream){
+      document.getElementById('remoteVideo').srcObject = remoteStream;
+    });
+    call.on('error', function(e){ console.error('Call error', e); });
+
+    showScreen('poser');
+    document.querySelectorAll('.dirBtn').forEach(function(b){ b.disabled = false; });
+  });
+
+  peer.on('error', function(err){
+    if (!settled) {
+      settled = true;
+      clearTimeout(failTimer);
+      document.getElementById('joinError').textContent = 'Connection failed: ' + (err && err.type ? err.type : 'check the code');
+      document.getElementById('joinBtn').disabled = false;
+    }
+  });
+};
+
+document.querySelectorAll('.dirBtn').forEach(function(b){
+  b.disabled = true;
+  b.onclick = function(){
+    if (conn && conn.open) conn.send(b.dataset.c);
+    b.classList.add('flash');
+    setTimeout(function(){ b.classList.remove('flash'); }, 300);
+  };
+});
+
+function endEverything(){
+  try { if (localStream) localStream.getTracks().forEach(function(t){ t.stop(); }); } catch(e){}
+  try { if (call) call.close(); } catch(e){}
+  try { if (conn) conn.close(); } catch(e){}
+  try { if (peer) peer.destroy(); } catch(e){}
+  peer = null; conn = null; call = null; localStream = null;
+  var sv = document.getElementById('soloVideo');
+  if (sv && sv.srcObject) { sv.srcObject.getTracks().forEach(function(t){ t.stop(); }); sv.srcObject = null; }
+  resetSoloState();
+  showScreen('landing');
+}
+
+// ---------------- Feature 2: Solo overlay ----------------
+var soloState = { img: null, scale: 1, rot: 0, x: 0, y: 0, opacity: 0.5 };
+
+var dropEl = document.getElementById('drop');
+var soloFileInput = document.getElementById('soloFile');
+var soloOv = document.getElementById('soloOverlay');
+
+dropEl.addEventListener('click', function(){ soloFileInput.click(); });
+document.getElementById('changeImgBtn').addEventListener('click', function(){ soloFileInput.click(); });
+
+['dragover', 'dragenter'].forEach(function(ev){
+  dropEl.addEventListener(ev, function(e){ e.preventDefault(); dropEl.classList.add('over'); });
+});
+['dragleave', 'drop'].forEach(function(ev){
+  dropEl.addEventListener(ev, function(e){ e.preventDefault(); dropEl.classList.remove('over'); });
+});
+dropEl.addEventListener('drop', function(e){
+  var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) loadSoloImg(f);
+});
+soloFileInput.addEventListener('change', function(e){
+  if (e.target.files && e.target.files[0]) loadSoloImg(e.target.files[0]);
+  soloFileInput.value = '';
+});
+
+function loadSoloImg(file){
+  if (!file.type || file.type.indexOf('image') !== 0) {
+    toast('Please choose an image file.');
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = async function(ev){
+    soloState.img = ev.target.result;
+    soloState.scale = 1; soloState.rot = 0; soloState.x = 0; soloState.y = 0;
+    soloOv.src = soloState.img;
+    soloOv.style.display = 'block';
+    dropEl.style.display = 'none';
+    document.getElementById('opRow').style.display = 'flex';
+    document.getElementById('changeImgBtn').style.display = 'block';
+    updateSoloTransform();
+
+    var v = document.getElementById('soloVideo');
+    if (!v.srcObject) {
+      await startSoloCamera();
+    }
+  };
+  reader.onerror = function(){ toast('Could not read that file.'); };
+  reader.readAsDataURL(file);
+}
+
+var soloFacingMode = 'environment';
+
+async function startSoloCamera(){
+  if (!isSecureContextOk()) {
+    toast(cameraErrorMessage(null), 4000);
+    return;
+  }
+  var v = document.getElementById('soloVideo');
+  if (v.srcObject) {
+    v.srcObject.getTracks().forEach(function(t){ t.stop(); });
+    v.srcObject = null;
+  }
+  try {
+    var s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: soloFacingMode }, audio: false });
+    v.srcObject = s;
+    v.classList.toggle('mirrored', soloFacingMode === 'user');
+  } catch (err) {
+    toast(cameraErrorMessage(err), 4000);
+  }
+}
+
+document.getElementById('soloSwitchBtn').onclick = async function(){
+  soloFacingMode = soloFacingMode === 'environment' ? 'user' : 'environment';
+  await startSoloCamera();
+};
+
+function updateSoloTransform(){
+  soloOv.style.opacity = soloState.opacity;
+  soloOv.style.transform = 'translate(-50%,-50%) translate(' + soloState.x + 'px,' + soloState.y + 'px) scale(' + soloState.scale + ') rotate(' + soloState.rot + 'deg)';
+}
+
+document.getElementById('opSlider').oninput = function(e){
+  soloState.opacity = e.target.value / 100;
+  document.getElementById('opVal').textContent = e.target.value + '%';
+  updateSoloTransform();
+};
+
+var sg = { active: false, sx: 0, sy: 0, ox: 0, oy: 0, sd: 0, ss: 1, sa: 0, sr: 0 };
+
+soloOv.addEventListener('touchstart', function(e){
+  e.preventDefault();
+  sg.active = true;
+  if (e.touches.length === 1) {
+    sg.sx = e.touches[0].clientX; sg.sy = e.touches[0].clientY;
+    sg.ox = soloState.x; sg.oy = soloState.y;
+  } else if (e.touches.length === 2) {
+    sg.sd = Math.hypot(e.touches[1].clientX - e.touches[0].clientX, e.touches[1].clientY - e.touches[0].clientY);
+    sg.ss = soloState.scale;
+    sg.sa = Math.atan2(e.touches[1].clientY - e.touches[0].clientY, e.touches[1].clientX - e.touches[0].clientX) * 180 / Math.PI;
+    sg.sr = soloState.rot;
+  }
+}, { passive: false });
+
+soloOv.addEventListener('touchmove', function(e){
+  e.preventDefault();
+  if (!sg.active) return;
+  if (e.touches.length === 1) {
+    soloState.x = sg.ox + (e.touches[0].clientX - sg.sx);
+    soloState.y = sg.oy + (e.touches[0].clientY - sg.sy);
+  } else if (e.touches.length === 2) {
+    var d = Math.hypot(e.touches[1].clientX - e.touches[0].clientX, e.touches[1].clientY - e.touches[0].clientY);
+    var a = Math.atan2(e.touches[1].clientY - e.touches[0].clientY, e.touches[1].clientX - e.touches[0].clientX) * 180 / Math.PI;
+    soloState.scale = Math.min(5, Math.max(0.2, sg.ss * (d / (sg.sd || 1))));
+    soloState.rot = sg.sr + (a - sg.sa);
+  }
+  updateSoloTransform();
+}, { passive: false });
+
+soloOv.addEventListener('touchend', function(){ sg.active = false; });
+
+// Desktop mouse drag fallback
+var mouseDown = false;
+soloOv.addEventListener('mousedown', function(e){
+  mouseDown = true;
+  sg.sx = e.clientX; sg.sy = e.clientY; sg.ox = soloState.x; sg.oy = soloState.y;
+});
+window.addEventListener('mousemove', function(e){
+  if (!mouseDown) return;
+  soloState.x = sg.ox + (e.clientX - sg.sx);
+  soloState.y = sg.oy + (e.clientY - sg.sy);
+  updateSoloTransform();
+});
+window.addEventListener('mouseup', function(){ mouseDown = false; });
+
+document.getElementById('soloShot').onclick = soloCapture;
+
+function soloCapture(){
+  var v = document.getElementById('soloVideo');
+  if (!v.videoWidth) { toast('Camera not ready yet.'); return; }
+  var c = document.createElement('canvas');
+  c.width = v.videoWidth; c.height = v.videoHeight;
+  var ctx = c.getContext('2d');
+  // Only the live camera frame is captured — the reference overlay is an
+  // on-screen alignment aid only and is never drawn into the saved photo.
+  ctx.drawImage(v, 0, 0, c.width, c.height);
+  finishSolo(c);
+}
+
+function finishSolo(canvas){
+  var a = document.createElement('a');
+  a.href = canvas.toDataURL('image/jpeg', 0.92);
+  a.download = 'newtfruit_' + Date.now() + '.jpg';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  toast('Photo saved.', 1800);
+}
+
+function resetSoloState(){
+  soloState = { img: null, scale: 1, rot: 0, x: 0, y: 0, opacity: 0.5 };
+  soloOv.style.display = 'none';
+  soloOv.src = '';
+  dropEl.style.display = 'block';
+  document.getElementById('opRow').style.display = 'none';
+  document.getElementById('changeImgBtn').style.display = 'none';
+  document.getElementById('opSlider').value = 50;
+  document.getElementById('opVal').textContent = '50%';
+  soloFacingMode = 'environment';
+  document.getElementById('soloVideo').classList.remove('mirrored');
+}
+
+// ---------------- Lifecycle ----------------
+// Service worker (real file: sw.js) so the app is installable and keeps working offline for the shell.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){ /* optional, safe to ignore */ });
+  });
+}
+
+window.addEventListener('beforeunload', function(){
+  try { if (peer) peer.destroy(); } catch(e){}
+});
+</script>
+</body></html>
