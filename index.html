@@ -154,10 +154,49 @@ video.mirrored{transform:scaleX(-1)}
 }
 #toast{
   position:absolute;top:72px;left:50%;transform:translateX(-50%);padding:11px 20px;border-radius:999px;
-  font-size:13px;display:none;z-index:20;max-width:85%;text-align:center;color:#fff;
+  font-size:13px;display:none;z-index:60;max-width:85%;text-align:center;color:#fff;
   background:rgba(20,16,30,.75); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
   border:1px solid var(--glass-border);
 }
+
+input{-webkit-user-select:text;user-select:text}
+#planChip{position:absolute;top:68px;left:50%;transform:translateX(-50%);padding:6px 14px;border-radius:999px;font-size:11.5px;font-weight:600;z-index:6;white-space:nowrap;color:#fff;
+  background:var(--glass-bg);-webkit-backdrop-filter:blur(var(--glass-blur));backdrop-filter:blur(var(--glass-blur));border:1px solid var(--glass-border)}
+#paywall{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(8,6,15,.72);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#paywall.active{display:flex}
+#payCard{position:relative;width:100%;max-width:340px;max-height:92vh;overflow-y:auto;padding:28px 22px 20px;border-radius:24px;text-align:center;background:rgba(30,20,52,.88);border:1px solid var(--glass-border);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#payClose{position:absolute;top:10px;right:12px;width:34px;height:34px;border-radius:50%;border:none;color:#fff;font-size:20px;background:rgba(255,255,255,.1)}
+#payCard h2{font-size:24px;font-weight:800;margin-bottom:var(--s2);background:linear-gradient(135deg,var(--pink),var(--purple) 50%,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+#payLead{font-size:14px;color:rgba(255,255,255,.82);margin-bottom:var(--s4);line-height:1.4}
+#payList{list-style:none;text-align:left;font-size:14px;margin:0 auto var(--s4);max-width:250px}
+#payList li{padding:5px 0 5px 24px;position:relative}
+#payList li::before{content:'\2713';position:absolute;left:0;color:var(--teal);font-weight:800}
+#payPrice{font-size:40px;font-weight:800;margin-bottom:var(--s3)}
+#payPrice small{font-size:13px;font-weight:600;color:rgba(255,255,255,.7)}
+#payBtn{width:100%;padding:15px;border:none;border-radius:999px;color:#fff;font-size:16px;font-weight:700;background:linear-gradient(135deg,var(--purple),var(--cyan));box-shadow:0 6px 20px rgba(138,43,226,.45)}
+#payBtn:disabled{opacity:.55}
+#payStatus{font-size:12.5px;color:#ffd27a;min-height:16px;margin-top:var(--s3);line-height:1.4;word-break:break-word}
+.linkBtn{background:none;border:none;color:var(--cyan);font-size:13px;margin-top:var(--s3);text-decoration:underline}
+#codeBox{display:none;margin-top:var(--s3);gap:8px}
+#codeBox.show{display:flex}
+#licInput{flex:1;min-width:0;padding:11px;border-radius:12px;border:1px solid var(--glass-border);background:rgba(255,255,255,.08);color:#fff;font-size:14px;letter-spacing:1px;text-transform:uppercase}
+#licBtn{padding:0 16px;border:none;border-radius:12px;color:#fff;font-weight:700;background:linear-gradient(135deg,var(--pink),var(--purple))}
+#paySuccess{display:none}
+#licShow{font-size:19px;font-weight:800;letter-spacing:2px;color:var(--gold);padding:14px 8px;margin:var(--s3) 0;border-radius:14px;background:rgba(255,255,255,.08);border:1px dashed rgba(255,255,255,.3);-webkit-user-select:text;user-select:text;word-break:break-all}
+.fine{font-size:11px;color:rgba(255,255,255,.55);margin-top:var(--s4);line-height:1.5}
+.fine a{color:rgba(255,255,255,.85)}
+
+video.contain{object-fit:contain;background:#000}
+#camTools{position:absolute;top:64px;right:16px;display:flex;flex-direction:column;gap:10px;z-index:5}
+.toolBtn{width:46px;height:46px;border-radius:50%;font-size:20px;color:#fff;display:flex;align-items:center;justify-content:center;
+  background:var(--glass-bg);-webkit-backdrop-filter:blur(var(--glass-blur));backdrop-filter:blur(var(--glass-blur));border:1px solid var(--glass-border)}
+.toolBtn.on{background:linear-gradient(135deg,var(--pink),var(--purple));border-color:transparent}
+.toolBtn:disabled{opacity:.4}
+#shareBadge{position:absolute;top:64px;left:16px;display:none;padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600;z-index:5;color:#fff;
+  background:linear-gradient(135deg,rgba(255,45,117,.75),rgba(138,43,226,.75));border:1px solid var(--glass-border)}
+#remoteWait{position:absolute;left:0;right:0;top:44%;text-align:center;font-size:15px;line-height:1.55;padding:0 30px;z-index:3;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.8)}
+#remoteNote{position:absolute;top:16px;left:64px;display:none;padding:8px 14px;border-radius:999px;font-size:12px;z-index:5;color:#fff;
+  background:var(--glass-bg);-webkit-backdrop-filter:blur(var(--glass-blur));backdrop-filter:blur(var(--glass-blur));border:1px solid var(--glass-border)}
 </style></head>
 <body>
 
@@ -179,6 +218,11 @@ video.mirrored{transform:scaleX(-1)}
   <video id="localVideo" autoplay playsinline muted></video>
   <div id="codeChip">·····</div>
   <div class="statusChip"><span class="dot" id="pDot"></span><span id="pStatus">Waiting</span></div>
+  <div id="camTools">
+    <button class="toolBtn" id="flipBtn" aria-label="Switch front/back camera" title="Switch camera">&#128260;</button>
+    <button class="toolBtn" id="shareBtn" aria-label="Share screen" title="Share screen">&#128421;&#65039;</button>
+  </div>
+  <div id="shareBadge">Sharing your screen &middot; tap to stop</div>
   <div id="cue"></div>
   <button class="exitBtn" id="endBtn1">End Session</button>
 </div>
@@ -192,7 +236,9 @@ video.mirrored{transform:scaleX(-1)}
 </div>
 
 <div id="poser" class="screen">
-  <video id="remoteVideo" autoplay playsinline></video>
+  <video id="remoteVideo" autoplay playsinline muted></video>
+  <div id="remoteWait">Connecting to the photographer’s camera…</div>
+  <div id="remoteNote">Screen share</div>
   <button class="back" id="posBack">←</button>
   <div class="statusChip"><span class="dot" id="oDot"></span><span id="oStatus">Connecting</span></div>
   <div id="dock">
@@ -221,10 +267,40 @@ video.mirrored{transform:scaleX(-1)}
       <button id="changeImgBtn">Change photo</button>
     </div>
   </div>
+  <div id="planChip"></div>
   <div id="drop">Drag &amp; drop a reference photo here,<br>or tap to choose</div>
   <input type="file" id="soloFile" accept="image/*">
   <div id="opRow"><span>◐</span><input type="range" id="opSlider" min="0" max="100" value="50"><span id="opVal">50%</span></div>
   <button id="soloShot"></button>
+</div>
+
+<div id="paywall" role="dialog" aria-modal="true" aria-label="Go Premium">
+  <div id="payCard">
+    <button id="payClose" aria-label="Close">&times;</button>
+    <div id="payMain">
+      <h2>Go Premium</h2>
+      <p id="payLead">Unlock unlimited reference photos.</p>
+      <ul id="payList">
+        <li>Unlimited reference photos</li>
+        <li>Valid for <b id="payDays">30</b> days</li>
+        <li>One-time payment, no auto-renew</li>
+      </ul>
+      <div id="payPrice">&#8377;<span id="payAmt">499</span> <small>/ <span id="payDays2">30</span> days</small></div>
+      <button id="payBtn">Pay</button>
+      <div id="payStatus"></div>
+      <button class="linkBtn" id="haveCodeBtn">I already have a code</button>
+      <div id="codeBox"><input id="licInput" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters"><button id="licBtn">Activate</button></div>
+    </div>
+    <div id="paySuccess">
+      <h2>Premium active</h2>
+      <p id="paySuccessLead">Unlimited reference photos unlocked.</p>
+      <div id="licShow"></div>
+      <button id="licCopy" class="linkBtn">Copy code</button>
+      <p class="fine" style="margin-top:6px">Save this code. Enter it on any phone to restore Premium.</p>
+      <button id="payDone" style="margin-top:14px;width:100%;padding:14px;border:none;border-radius:999px;color:#fff;font-size:15px;font-weight:700;background:linear-gradient(135deg,var(--purple),var(--cyan))">Start using</button>
+    </div>
+    <p class="fine">Payments by Razorpay. By paying you agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a>, <a href="refund.html" target="_blank" rel="noopener">Refund Policy</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+  </div>
 </div>
 
 <div id="toast"></div>
@@ -257,7 +333,7 @@ function cameraErrorMessage(err){
 document.getElementById('startBtn').onclick = function(){ showScreen('landing'); };
 document.getElementById('btnPhotog').onclick = goPhotographer;
 document.getElementById('btnJoin').onclick = function(){ resetJoinScreen(); showScreen('join'); };
-document.getElementById('btnSolo').onclick = function(){ showScreen('solo'); };
+document.getElementById('btnSolo').onclick = function(){ showScreen('solo'); updatePlanChip(); refreshLicense(); };
 document.getElementById('posBack').onclick = function(){ endEverything(); };
 document.getElementById('soloBack').onclick = function(){ endEverything(); };
 
@@ -275,6 +351,134 @@ function genCode(){
 
 // ---------------- Shared state ----------------
 var peer = null, conn = null, call = null, code = null, localStream = null;
+var camFacing = 'environment', sharing = false, screenStream = null, camBusy = false;
+
+function isMobileUA(){
+  var ua = navigator.userAgent || '';
+  return /Android|iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && (navigator.maxTouchPoints || 0) > 1);
+}
+
+// What the poser should be seeing right now: the screen when sharing, otherwise the camera.
+function getOutgoingStream(){ return (sharing && screenStream) ? screenStream : localStream; }
+
+// Swap the video the poser receives, live, without reconnecting.
+async function swapOutgoingTrack(track){
+  if (!call || !call.peerConnection || !track) return;
+  var senders = call.peerConnection.getSenders(), s = null, i;
+  for (i = 0; i < senders.length; i++) { if (senders[i].track && senders[i].track.kind === 'video') { s = senders[i]; break; } }
+  if (!s) { for (i = 0; i < senders.length; i++) { if (!senders[i].track) { s = senders[i]; break; } } }
+  if (s) await s.replaceTrack(track);
+}
+
+// Tell the poser whether they are looking at a camera or a shared screen (screens need to be shown uncropped).
+function sendMode(){
+  try { if (conn && conn.open) conn.send({ t: 'mode', v: sharing ? 'screen' : 'camera' }); } catch (e) {}
+}
+
+function updateShareUI(){
+  document.getElementById('shareBtn').classList.toggle('on', sharing);
+  document.getElementById('shareBadge').style.display = sharing ? 'block' : 'none';
+}
+
+function getCam(facing){ return navigator.mediaDevices.getUserMedia({ video: { facingMode: facing }, audio: false }); }
+
+function useCameraStream(stream, facing){
+  localStream = stream; camFacing = facing;
+  var v = document.getElementById('localVideo');
+  v.srcObject = stream;
+  v.classList.toggle('mirrored', facing === 'user');
+  if (!sharing) return swapOutgoingTrack(stream.getVideoTracks()[0]);
+}
+
+// Front / back camera switch. The poser's picture changes live.
+async function flipCamera(){
+  if (camBusy || !localStream) return;
+  camBusy = true;
+  try {
+    var cams = [];
+    try { cams = (await navigator.mediaDevices.enumerateDevices()).filter(function(d){ return d.kind === 'videoinput'; }); } catch (e) {}
+    if (cams.length === 1) { toast('This device has only one camera.', 2500); return; }
+    var prev = camFacing, next = prev === 'environment' ? 'user' : 'environment';
+    localStream.getTracks().forEach(function(t){ t.stop(); });   // phones must release the old camera before opening the other
+    var stream = null;
+    try { stream = await getCam(next); }
+    catch (err) {
+      toast('Could not switch the camera.', 3000);
+      try { stream = await getCam(prev); next = prev; } catch (e2) { stream = null; }
+    }
+    if (!stream) { toast('Camera unavailable. End the session and start again.', 4000); return; }
+    await useCameraStream(stream, next);
+  } finally { camBusy = false; }
+}
+
+// Screen share (works in laptop/desktop browsers; phone browsers do not allow it).
+async function startScreenShare(){
+  if (sharing) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+    toast('Screen sharing is not supported in this browser. Use a laptop or desktop browser.', 5000); return;
+  }
+  var t0 = Date.now(), ds;
+  try { ds = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: 30 }, audio: false }); }
+  catch (err) {
+    if (err && err.name === 'NotAllowedError' && isMobileUA() && Date.now() - t0 < 600) toast('Phone browsers do not allow screen sharing. Open Newtfruit on a laptop or desktop to share a screen.', 6000);
+    else if (err && err.name === 'NotAllowedError') toast('Screen sharing was cancelled.', 2500);
+    else toast('Could not start screen sharing.', 3000);
+    return;
+  }
+  screenStream = ds; sharing = true;
+  var track = ds.getVideoTracks()[0];
+  track.addEventListener('ended', function(){ stopScreenShare(); });   // the browser's own "Stop sharing" button
+  await swapOutgoingTrack(track);
+  sendMode(); updateShareUI();
+}
+
+async function stopScreenShare(){
+  if (!sharing) return;
+  sharing = false;
+  if (screenStream) { screenStream.getTracks().forEach(function(t){ t.stop(); }); screenStream = null; }
+  if (localStream && localStream.getVideoTracks()[0]) await swapOutgoingTrack(localStream.getVideoTracks()[0]);
+  sendMode(); updateShareUI();
+}
+
+document.getElementById('flipBtn').onclick = flipCamera;
+document.getElementById('shareBtn').onclick = function(){ if (sharing) stopScreenShare(); else startScreenShare(); };
+document.getElementById('shareBadge').onclick = stopScreenShare;
+
+// ---- poser side: what the photographer tells us, and the "waiting for video" hint ----
+function setRemoteMode(mode){
+  var screen = mode === 'screen';
+  document.getElementById('remoteVideo').classList.toggle('contain', screen);
+  document.getElementById('remoteNote').style.display = screen ? 'block' : 'none';
+}
+function onHostMessage(d){ if (d && d.t === 'mode') setRemoteMode(d.v); }
+
+// A call needs at least one video track in the offer or no video can come back. The poser has no camera,
+// so we send a tiny blank canvas track instead (no camera permission involved).
+function makeReceiveOnlyStream(){
+  try {
+    var c = document.createElement('canvas'); c.width = 2; c.height = 2;
+    var g = c.getContext && c.getContext('2d'); if (g) { g.fillStyle = '#000'; g.fillRect(0, 0, 2, 2); }
+    var s = c.captureStream && c.captureStream(1);
+    if (s && s.getVideoTracks().length) return s;
+  } catch (e) {}
+  return new MediaStream();
+}
+
+var waitTimer = null;
+function showRemoteWaiting(){
+  var w = document.getElementById('remoteWait');
+  w.style.display = 'block';
+  w.textContent = 'Connecting to the photographer\u2019s camera\u2026';
+  clearTimeout(waitTimer);
+  waitTimer = setTimeout(function(){
+    if (w.style.display !== 'none') w.textContent = 'Still waiting for the video. Ask the photographer to keep Newtfruit open on the camera screen, and try the same Wi-Fi on both phones.';
+  }, 12000);
+}
+function hideRemoteWaiting(){ clearTimeout(waitTimer); document.getElementById('remoteWait').style.display = 'none'; }
+(function(){
+  var rv = document.getElementById('remoteVideo');
+  ['playing', 'loadeddata', 'resize'].forEach(function(ev){ rv.addEventListener(ev, hideRemoteWaiting); });
+})();
 
 function setDot(dotId, statusId, state){
   var d = document.getElementById(dotId), s = document.getElementById(statusId);
@@ -303,7 +507,10 @@ async function goPhotographer(){
     showScreen('landing');
     return;
   }
+  camFacing = 'environment'; sharing = false; screenStream = null;
   document.getElementById('localVideo').srcObject = localStream;
+  document.getElementById('localVideo').classList.remove('mirrored');
+  updateShareUI();
 
   try {
     peer = new Peer('newtfruit-' + code);
@@ -321,13 +528,13 @@ async function goPhotographer(){
 
   peer.on('call', function(c){
     call = c;
-    c.answer(localStream);
+    c.answer(getOutgoingStream());
     c.on('error', function(e){ console.error('Call error', e); });
   });
 
   peer.on('connection', function(c){
     conn = c;
-    conn.on('open', function(){ setDot('pDot', 'pStatus', 'live'); });
+    conn.on('open', function(){ setDot('pDot', 'pStatus', 'live'); sendMode(); });
     conn.on('data', function(d){ showCue(String(d)); });
     conn.on('close', function(){ setDot('pDot', 'pStatus', 'waiting'); });
   });
@@ -384,6 +591,7 @@ document.getElementById('joinBtn').onclick = function(){
 
   peer.on('open', function(){
     conn = peer.connect('newtfruit-' + c, { reliable: true });
+    conn.on('data', onHostMessage);
 
     conn.on('open', function(){
       settled = true;
@@ -400,13 +608,19 @@ document.getElementById('joinBtn').onclick = function(){
       }
     });
 
-    // Call with an empty stream — poser's own camera is never requested or used.
-    call = peer.call('newtfruit-' + c, new MediaStream());
+    // The poser's own camera is never requested or used (see makeReceiveOnlyStream).
+    var rs = makeReceiveOnlyStream();
+    var callOpts = rs.getVideoTracks().length ? {} : { constraints: { offerToReceiveVideo: true, offerToReceiveAudio: false } };
+    call = peer.call('newtfruit-' + c, rs, callOpts);
     call.on('stream', function(remoteStream){
-      document.getElementById('remoteVideo').srcObject = remoteStream;
+      var rv = document.getElementById('remoteVideo');
+      rv.srcObject = remoteStream;
+      try { var p = rv.play(); if (p && p.catch) p.catch(function(){}); } catch (e) {}
     });
     call.on('error', function(e){ console.error('Call error', e); });
 
+    setRemoteMode('camera');
+    showRemoteWaiting();
     showScreen('poser');
     document.querySelectorAll('.dirBtn').forEach(function(b){ b.disabled = false; });
   });
@@ -431,6 +645,9 @@ document.querySelectorAll('.dirBtn').forEach(function(b){
 });
 
 function endEverything(){
+  try { if (screenStream) screenStream.getTracks().forEach(function(t){ t.stop(); }); } catch(e){}
+  sharing = false; screenStream = null; camFacing = 'environment'; updateShareUI();
+  try { var rv = document.getElementById('remoteVideo'); rv.srcObject = null; setRemoteMode('camera'); hideRemoteWaiting(); document.getElementById('localVideo').classList.remove('mirrored'); } catch(e){}
   try { if (localStream) localStream.getTracks().forEach(function(t){ t.stop(); }); } catch(e){}
   try { if (call) call.close(); } catch(e){}
   try { if (conn) conn.close(); } catch(e){}
@@ -445,12 +662,220 @@ function endEverything(){
 // ---------------- Feature 2: Solo overlay ----------------
 var soloState = { img: null, scale: 1, rot: 0, x: 0, y: 0, opacity: 0.5 };
 
+
+// ---------------- Monetization: 3 free reference photos, then a paid pass ----------------
+// Free uses are counted on this device. The paid pass is checked on the server (api/status), so it can't be faked.
+var NF = { FREE_LIMIT: 3, USED: 'nf_free_used', LIC: 'nf_license', EXP: 'nf_license_exp', PENDING: 'nf_pending', MON: 'nf_mon' };
+var premiumUntil = 0;
+// The 3-free limit only switches on when the payment server (api/config) is reachable, so a copy of the app
+// hosted without it (e.g. plain GitHub Pages) stays fully free instead of showing a paywall nobody can pay.
+var monetizationLive = false;
+var priceInfo = { priceRupees: 499, days: 30 };
+
+function lsGet(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v){ try { localStorage.setItem(k, v); } catch (e) {} }
+function lsDel(k){ try { localStorage.removeItem(k); } catch (e) {} }
+
+function usedCount(){ var n = parseInt(lsGet(NF.USED) || '0', 10); return isNaN(n) ? 0 : n; }
+function freeLeft(){ return Math.max(0, NF.FREE_LIMIT - usedCount()); }
+function isPremium(){ return premiumUntil > Date.now(); }
+function canUseReference(){ return !monetizationLive || isPremium() || freeLeft() > 0; }
+
+function updatePlanChip(){
+  var chip = document.getElementById('planChip');
+  chip.style.display = monetizationLive ? '' : 'none';
+  if (isPremium()) {
+    var d = Math.max(1, Math.ceil((premiumUntil - Date.now()) / 86400000));
+    chip.textContent = '\u2B50 Premium \u00B7 ' + d + (d === 1 ? ' day left' : ' days left');
+  } else if (freeLeft() > 0) {
+    chip.textContent = freeLeft() + ' of ' + NF.FREE_LIMIT + ' free references left';
+  } else {
+    chip.textContent = 'Free limit reached \u00B7 Go Premium';
+  }
+}
+
+function applyLicense(code, expiresAt){
+  lsSet(NF.LIC, code);
+  lsSet(NF.EXP, String(expiresAt));
+  premiumUntil = expiresAt;
+  updatePlanChip();
+}
+
+async function refreshLicense(){
+  var lic = lsGet(NF.LIC);
+  if (!lic) { premiumUntil = 0; updatePlanChip(); return; }
+  try {
+    var r = await fetch('api/status', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ license: lic }) });
+    var d = await r.json();
+    if (d && d.active) { premiumUntil = d.expiresAt; lsSet(NF.EXP, String(d.expiresAt)); }
+    else { premiumUntil = 0; lsSet(NF.EXP, '0'); }
+  } catch (e) {
+    // offline or server unreachable: trust the last known expiry so paid users aren't locked out
+    premiumUntil = parseInt(lsGet(NF.EXP) || '0', 10) || 0;
+  }
+  updatePlanChip();
+}
+
+async function loadPriceInfo(){
+  try {
+    var r = await fetch('api/config');
+    var d = await r.json();
+    if (r.ok && d && d.priceRupees) { priceInfo = d; monetizationLive = true; lsSet(NF.MON, '1'); }
+    else { monetizationLive = false; lsDel(NF.MON); }
+  } catch (e) {
+    monetizationLive = lsGet(NF.MON) === '1';   // offline: keep the last known state
+  }
+  updatePlanChip();
+}
+
+function setPayStatus(msg){ document.getElementById('payStatus').textContent = msg || ''; }
+function setPayBusy(busy, label){
+  var b = document.getElementById('payBtn');
+  b.disabled = !!busy;
+  b.textContent = busy ? (label || 'Please wait\u2026') : 'Pay \u20B9' + priceInfo.priceRupees + ' \u00B7 ' + priceInfo.days + ' days';
+}
+
+function fillPrice(){
+  document.getElementById('payAmt').textContent = priceInfo.priceRupees;
+  document.getElementById('payDays').textContent = priceInfo.days;
+  document.getElementById('payDays2').textContent = priceInfo.days;
+}
+
+function openPaywall(){
+  document.getElementById('payLead').textContent = usedCount() >= NF.FREE_LIMIT
+    ? 'You\u2019ve used your ' + NF.FREE_LIMIT + ' free reference photos.'
+    : 'Unlock unlimited reference photos.';
+  fillPrice();
+  document.getElementById('payMain').style.display = 'block';
+  document.getElementById('paySuccess').style.display = 'none';
+  document.getElementById('codeBox').classList.remove('show');
+  setPayStatus('');
+  setPayBusy(false);
+  document.getElementById('paywall').classList.add('active');
+  loadPriceInfo().then(function(){
+    fillPrice();
+    if (!document.getElementById('payBtn').disabled) setPayBusy(false);
+  });
+}
+function closePaywall(){ document.getElementById('paywall').classList.remove('active'); }
+
+function showSuccess(code){
+  document.getElementById('payMain').style.display = 'none';
+  document.getElementById('paySuccess').style.display = 'block';
+  document.getElementById('licShow').textContent = code;
+}
+
+function guardReference(){
+  if (canUseReference()) return true;
+  openPaywall();
+  return false;
+}
+
+function loadRazorpay(){
+  return new Promise(function(resolve, reject){
+    if (window.Razorpay) { resolve(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    s.onload = function(){ resolve(); };
+    s.onerror = function(){ reject(new Error('Could not load the payment window. Check your internet.')); };
+    document.head.appendChild(s);
+  });
+}
+
+// Returns 'ok', 'retry' (network trouble / not confirmed yet) or 'rejected' (will never succeed).
+async function submitVerification(p){
+  try {
+    var r = await fetch('api/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) });
+    var d = await r.json().catch(function(){ return {}; });
+    if (r.ok && d.license) { applyLicense(d.license, d.expiresAt); lsDel(NF.PENDING); showSuccess(d.license); return 'ok'; }
+    if (r.status === 400) { lsDel(NF.PENDING); return 'rejected'; }
+    return 'retry';
+  } catch (e) { return 'retry'; }
+}
+
+async function verifyPayment(orderId, resp){
+  var pending = { orderId: orderId, paymentId: resp.razorpay_payment_id, signature: resp.razorpay_signature };
+  lsSet(NF.PENDING, JSON.stringify(pending));   // kept until the server confirms, so a dropped connection can't lose a paid pass
+  setPayBusy(true, 'Activating\u2026');
+  setPayStatus('Payment received. Activating your pass\u2026');
+  var result = await submitVerification(pending);
+  if (result === 'rejected') {
+    setPayStatus('We could not verify this payment. If money was deducted, contact support with Payment ID: ' + pending.paymentId);
+    setPayBusy(false);
+  } else if (result === 'retry') {
+    setPayStatus('Payment received, but activation is slow. Reopen the app in a minute \u2014 it will retry automatically. Payment ID: ' + pending.paymentId);
+    setPayBusy(false);
+  }
+}
+
+async function startPayment(){
+  setPayStatus('');
+  setPayBusy(true, 'Starting payment\u2026');
+  try {
+    await loadRazorpay();
+    var r = await fetch('api/create-order', { method: 'POST' });
+    var o = await r.json().catch(function(){ return {}; });
+    if (!r.ok || !o.orderId) throw new Error(o.error || 'Payments are not available right now. Please try again later.');
+    var rz = new Razorpay({
+      key: o.keyId,
+      amount: o.amount,
+      currency: o.currency,
+      order_id: o.orderId,
+      name: 'Newtfruit',
+      description: 'Premium \u2013 ' + o.days + ' days unlimited reference photos',
+      theme: { color: '#8A2BE2' },
+      handler: function(resp){ verifyPayment(o.orderId, resp); },
+      modal: { ondismiss: function(){ setPayBusy(false); } }
+    });
+    rz.on('payment.failed', function(){ setPayStatus('Payment failed. Please try again.'); setPayBusy(false); });
+    rz.open();
+  } catch (e) {
+    setPayStatus(e.message || 'Something went wrong. Please try again.');
+    setPayBusy(false);
+  }
+}
+
+async function activateCode(){
+  var raw = document.getElementById('licInput').value;
+  setPayStatus('Checking code\u2026');
+  try {
+    var r = await fetch('api/status', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ license: raw }) });
+    var d = await r.json();
+    if (d && d.active) { applyLicense(d.license, d.expiresAt); setPayStatus(''); showSuccess(d.license); }
+    else setPayStatus('That code is invalid or has expired.');
+  } catch (e) { setPayStatus('Could not check the code. Check your internet and try again.'); }
+}
+
+async function retryPending(){
+  var raw = lsGet(NF.PENDING);
+  if (!raw) return;
+  var p; try { p = JSON.parse(raw); } catch (e) { lsDel(NF.PENDING); return; }
+  var res = await submitVerification(p);
+  if (res === 'ok') { toast('Premium activated \u2B50', 3000); closePaywall(); }
+}
+
+document.getElementById('payBtn').onclick = startPayment;
+document.getElementById('payClose').onclick = closePaywall;
+document.getElementById('payDone').onclick = closePaywall;
+document.getElementById('haveCodeBtn').onclick = function(){ document.getElementById('codeBox').classList.toggle('show'); };
+document.getElementById('licBtn').onclick = activateCode;
+document.getElementById('licCopy').onclick = async function(){
+  try { await navigator.clipboard.writeText(document.getElementById('licShow').textContent); toast('Code copied', 1800); }
+  catch (e) { toast('Press and hold the code to copy it', 2500); }
+};
+document.getElementById('planChip').onclick = function(){ if (!isPremium()) openPaywall(); };
+
+monetizationLive = lsGet(NF.MON) === '1';
+updatePlanChip();
+refreshLicense().then(retryPending);
+loadPriceInfo();
+
 var dropEl = document.getElementById('drop');
 var soloFileInput = document.getElementById('soloFile');
 var soloOv = document.getElementById('soloOverlay');
 
-dropEl.addEventListener('click', function(){ soloFileInput.click(); });
-document.getElementById('changeImgBtn').addEventListener('click', function(){ soloFileInput.click(); });
+dropEl.addEventListener('click', function(){ if (guardReference()) soloFileInput.click(); });
+document.getElementById('changeImgBtn').addEventListener('click', function(){ if (guardReference()) soloFileInput.click(); });
 
 ['dragover', 'dragenter'].forEach(function(ev){
   dropEl.addEventListener(ev, function(e){ e.preventDefault(); dropEl.classList.add('over'); });
@@ -468,12 +893,15 @@ soloFileInput.addEventListener('change', function(e){
 });
 
 function loadSoloImg(file){
+  if (!guardReference()) return;   // also covers drag & drop
   if (!file.type || file.type.indexOf('image') !== 0) {
     toast('Please choose an image file.');
     return;
   }
   var reader = new FileReader();
   reader.onload = async function(ev){
+    if (monetizationLive && !isPremium()) lsSet(NF.USED, String(usedCount() + 1));   // one free reference used
+    updatePlanChip();
     soloState.img = ev.target.result;
     soloState.scale = 1; soloState.rot = 0; soloState.x = 0; soloState.y = 0;
     soloOv.src = soloState.img;
